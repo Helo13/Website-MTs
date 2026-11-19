@@ -1,0 +1,43 @@
+# .htaccess - Hostinger LiteSpeed + React Single Page App
+
+Options -Indexes
+DirectoryIndex index.html index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Allow direct access to existing files and directories
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 2. Block old WordPress paths (return 410 Gone so search engines drop them from the index)
+  RewriteRule ^wp-admin - [G]
+  RewriteRule ^wp-login\.php$ - [G]
+  RewriteRule ^wp-content - [G]
+  RewriteRule ^wp-includes - [G]
+  RewriteRule ^xmlrpc\.php$ - [G]
+
+  # 3. Allow direct access to API PHP endpoints and uploads folder
+  RewriteCond %{REQUEST_URI} ^/api/ [NC]
+  RewriteRule ^ - [L]
+
+  RewriteCond %{REQUEST_URI} ^/uploads/ [NC]
+  RewriteRule ^ - [L]
+
+  # 4. Dynamic Open Graph / meta rendering for detail pages
+  #    (URLs like /berita/12 or /karya/34 are rendered server-side for SEO)
+  RewriteCond %{REQUEST_URI} ^/berita/([0-9]+)/?$ [NC]
+  RewriteRule ^ meta_renderer.php?type=berita&id=%1 [L]
+
+  RewriteCond %{REQUEST_URI} ^/karya/([0-9]+)/?$ [NC]
+  RewriteRule ^ meta_renderer.php?type=karya&id=%1 [L]
+
+  # 5. Fallback: route all other requests to SPA root index.html
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "https://mtsmusixga.sch.id"
+</IfModule>

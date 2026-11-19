@@ -1,0 +1,16 @@
+# .htaccess - Public uploads folder security
+
+# Disable PHP engine execution
+php_flag engine off
+
+# Block execution of script files (PHP, Python, shell scripts, CGI, etc.)
+<FilesMatch "\.(php|phtml|py|sh|cgi|pl|asp|aspx|jsp|fcgi|exe)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Block access to hidden/system files
+<FilesMatch "^\.">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
